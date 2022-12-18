@@ -10,19 +10,34 @@ Posts
     <h1>Наши новости</h1>
     <h3>Всего новостей: {{ posts|length }}</h3>
     <hr>
+
+    {% if perms.news.add_post %}
+    <a href="{% url 'post_search' %}">Найти</a>
+    <a href="{% url 'post_create' %}">Создать пост</a>
+    {% endif %}
     <table>
         <tr>
            <td>Заголовок</td>
            <td>Категория</td>
            <td>Дата публикации</td>
            <td>Текст статьи</td>
+
+            {% if perms.news.change_post or perms.news.delete_post %}
+            <td>Действия</td>
+            {% endif %}
         </tr>
         {% for post in posts|dictsortreversed:'dateCreation' %}
         <tr>
-           <td>{{ post.title|censor }}</td>
+           <td><a href="{% url 'post_detail' pk=post.id %}">{{ post.title|censor }}</a></td>
            <td>{{ post.categoryType }}</td>
            <td>{{ post.dateCreation|date:'d M Y' }}</td>
            <td>{{ post.text|truncatechars:20|censor }}</td>
+           <td>
+               {% if perms.news.change_post %}
+               <a href="{% url 'post_edit' pk=post.id %}">Изменить</a>
+               <a href="{% url 'post_delete' pk=post.id %}">Удалить</a>
+               {% endif %}
+           </td>
         </tr>
         {% endfor %}
     </table>
